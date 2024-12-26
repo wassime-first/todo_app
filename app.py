@@ -12,6 +12,7 @@ import os
 
 load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
+URI = os.getenv("URI")
 
 date_now = datetime.datetime.now()
 date_now = date_now.strftime("%Y-%m-%d")
@@ -23,7 +24,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = (SECRET_KEY)
 
 """ database """
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///todo.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 ''' bootstrap'''
@@ -39,13 +40,13 @@ login_manager.login_view = "login"
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return UserToDo.query.get(int(user_id))
 
 
 """ user table """
 
 
-class User(UserMixin, db.Model):
+class UserToDo(UserMixin, db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
@@ -63,7 +64,7 @@ class Task(UserMixin, db.Model):
     title = db.Column(db.String(100), nullable=False)
     date = db.Column(db.String(50), nullable=False)
     complete = db.Column(db.Integer, nullable=False, default=0)
-    user = db.relationship("User", back_populates="tasks")
+    user = db.relationship("UserToDO", back_populates="tasks")
     user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE", onupdate="CASCADE"), nullable=False)
 
 
@@ -99,7 +100,7 @@ def register():
         email = form.email.data
         password = form.password.data
         hashed_password = generate_password_hash(password, salt_length=8)
-        new_user = User(name=name, email=email, password=hashed_password)
+        new_user = UserToDo(name=name, email=email, password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
         login_user(new_user)
@@ -113,7 +114,7 @@ def login():
     if form.validate_on_submit():
         email = request.form.get("email")
         password = request.form.get("password")
-        user = User.query.filter_by(email=email).first()
+        user = UserToDo.query.filter_by(email=email).first()
         if user and check_password_hash(user.password, password):
             login_user(user)
             return redirect(url_for("tasks"))
