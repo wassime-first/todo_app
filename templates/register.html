@@ -1,0 +1,25 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% include 'head.html' %}
+
+<header class="py-5">
+    <div class="container px-lg-5">
+        <div class="p-4 p-lg-5 bg-light rounded-3 mx-auto text-center">
+            <div class="m-4 m-lg-5 d-flex justify-content-center" >
+                <div class="card text-center" style="width: 18rem;">
+                    <div class="card-header">
+                        Register
+                    </div>
+                    <div class="card-body">
+                 {{ wtf.quick_form(form, novalidate=True) }}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+{% include 'footer.html' %}
+</body>
+</html>

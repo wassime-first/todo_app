@@ -1,0 +1,20 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% include 'head.html' %}
+
+<header class="py-5">
+    <div class="container px-lg-5">
+        <div class="p-4 p-lg-5 bg-light rounded-3 mx-auto text-center">
+            <div class="m-4 m-lg-5 d-flex justify-content-center">
+                <div class="card text-center" style="width: 18rem;">
+                  <form class="form-group" method="post" action="{{url_for('edit',id=task.id)}}">
+                      <textarea class="form-control border-primary" cols="10" rows="10" name="title"></textarea>
+                          <button role="button" class="button button-success">Update</button>
+                  </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+{% include 'footer.html' %}

@@ -1,0 +1,57 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% block head %}
+
+<link rel="stylesheet" href="./static/css/css.css">
+{% endblock %}
+{% include 'head.html' %}
+
+
+<!--<header class="py-5">-->
+<!--    <div class="container px-lg-5">-->
+<!--        <div class="p-4 p-lg-5 bg-light rounded-3 mx-auto text-center">-->
+<!--            <div class="m-4 m-lg-5 d-flex justify-content-center">-->
+<!--                <div class="text-center" style="width: 18rm" >-->
+<a href="{{ url_for('add') }}">add task</a>
+{% for t in tasks %}
+<div class="card">
+    {% if t.complete == 0 %}
+    <div class="front" style="background-color: red;">
+        <p class="large">X</p>
+    </div>
+    {% else %}
+     <div class="front" style="background-color: green;">
+        <p class="large">Done!</p>
+    </div>
+    {% endif %}
+    <div class="back">
+        <div>
+            <div class="title">{{t.title}} <span class="release_date">({{t.date}})</span>
+            </div>
+            <div class="rating">
+                <label>{{t.id}}</label>
+                <i class="fas fa-star star"></i>
+            </div>
+            <p class="review">here is ur motivation quot</p>
+            <p class="overview">
+                ayashi
+            </p>
+            <a href="{{url_for('edit', id=t.id)}}" style="margin: 2rem" class="button">Update</a>
+            <br>
+            <a href="{{url_for('delete',id=t.id)}}" class="button delete-button">Delete</a>
+            <br>
+            <a href="{{url_for('complete',id=t.id)}}" class="button success-button">Done</a>
+
+        </div>
+    </div>
+</div>
+{% endfor %}
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</header>-->
+
+
+{% include 'footer.html' %}
+</body>
+</html>
