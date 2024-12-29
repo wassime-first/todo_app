@@ -7,9 +7,20 @@
             <div class="m-4 m-lg-5 d-flex justify-content-center" >
                 <div class="card text-center" style="width: 18rem;">
                     <div class="card-header">
-                        Register
+                        Login
                     </div>
                     <div class="card-body">
+                        <title>My Application</title>
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+{% block body %}{% endblock %}
                  {{ wtf.quick_form(form, novalidate=True) }}
 
                     </div>

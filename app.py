@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
 from wtforms import StringField, EmailField, PasswordField, SubmitField
@@ -40,13 +40,13 @@ login_manager.login_view = "login"
 
 @login_manager.user_loader
 def load_user(user_id):
-    return UserToDo.query.get(int(user_id))
+    return User.query.get(int(user_id))
 
 
 """ user table """
 
 
-class UserToDo(UserMixin, db.Model):
+class User(UserMixin, db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
@@ -64,7 +64,7 @@ class Task(UserMixin, db.Model):
     title = db.Column(db.String(100), nullable=False)
     date = db.Column(db.String(50), nullable=False)
     complete = db.Column(db.Integer, nullable=False, default=0)
-    user = db.relationship("UserToDO", back_populates="tasks")
+    user = db.relationship("User", back_populates="tasks")
     user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE", onupdate="CASCADE"), nullable=False)
 
 
@@ -96,15 +96,19 @@ def home():
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
-        name = form.name.data
-        email = form.email.data
-        password = form.password.data
-        hashed_password = generate_password_hash(password, salt_length=8)
-        new_user = UserToDo(name=name, email=email, password=hashed_password)
-        db.session.add(new_user)
-        db.session.commit()
-        login_user(new_user)
-        return redirect(url_for("tasks"))
+        if User.query.filter_by(email=form.email.data).first():
+            flash("Email already exists")
+            return redirect(url_for("login"))
+        else:
+            name = form.name.data
+            email = form.email.data
+            password = form.password.data
+            hashed_password = generate_password_hash(password, salt_length=8)
+            new_user = User(name=name, email=email, password=hashed_password)
+            db.session.add(new_user)
+            db.session.commit()
+            login_user(new_user)
+            return redirect(url_for("tasks"))
     return render_template("register.html", form=form, logged_in=current_user.is_authenticated)
 
 
@@ -114,7 +118,7 @@ def login():
     if form.validate_on_submit():
         email = request.form.get("email")
         password = request.form.get("password")
-        user = UserToDo.query.filter_by(email=email).first()
+        user = User.query.filter_by(email=email).first()
         if user and check_password_hash(user.password, password):
             login_user(user)
             return redirect(url_for("tasks"))
@@ -134,7 +138,7 @@ def logout():
 def tasks():
     global hour_now, date_now, yeastearday_date
     now_tasks = Task.query.filter_by(user_id=current_user.id).filter_by(date=date_now).all()
-    previous_day_tasks = Task.query.filter_by(user_id=current_user.id).filter_by(date=yeastearday_date).all()
+    previous_day_tasks = Task.query.filter_by(user_id=current_user.id).filter(Task.date != date_now).all()
     today_tasks = []
     today_tasks.append(now_tasks)
     if previous_day_tasks:
@@ -148,7 +152,7 @@ def tasks():
                 task.complete = 0
                 task.date = date_now
                 db.session.commit()
-                tasks.append(task)
+                today_tasks.append(task)
     else:
         today_tasks = now_tasks
 
