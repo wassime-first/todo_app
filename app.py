@@ -47,11 +47,11 @@ def load_user(user_id):
 
 
 class User(UserMixin, db.Model):
-    __tablename__ = "users"
+    __tablename__ = "users1"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(100), nullable=False, unique=True)
-    password = db.Column(db.String(50), nullable=False)
+    password = db.Column(db.String(1000), nullable=False)
     tasks = db.relationship("Task", back_populates="user", cascade="all, delete, save-update")
 
 
@@ -59,13 +59,13 @@ class User(UserMixin, db.Model):
 
 
 class Task(UserMixin, db.Model):
-    __tablename__ = "tasks"
+    __tablename__ = "tasks1"
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     date = db.Column(db.String(50), nullable=False)
     complete = db.Column(db.Integer, nullable=False, default=0)
     user = db.relationship("User", back_populates="tasks")
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE", onupdate="CASCADE"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users1.id", ondelete="CASCADE", onupdate="CASCADE"), nullable=False)
 
 
 """ register form """
